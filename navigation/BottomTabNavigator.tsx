@@ -5,9 +5,15 @@ import * as React from 'react';
 
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
-import TabOneScreen from '../screens/TabOneScreen';
+import AltaPacienteScreen from '../screens/AltaPacienteScreen';
 import TabTwoScreen from '../screens/TabTwoScreen';
-import { BottomTabParamList, TabOneParamList, TabTwoParamList } from '../types';
+import {
+  AltaPacienteParamList,
+  BottomTabParamList,
+  TabConsultasParamList,
+  TabTwoParamList
+} from '../types';
+import TabConsultasScreen from "../screens/TabConsultasScreen";
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
@@ -16,11 +22,11 @@ export default function BottomTabNavigator() {
 
   return (
     <BottomTab.Navigator
-      initialRouteName="TabOne"
+      initialRouteName="Alta"
       tabBarOptions={{ activeTintColor: Colors[colorScheme].tint }}>
       <BottomTab.Screen
-        name="TabOne"
-        component={TabOneNavigator}
+        name="Alta"
+        component={TabAltaPaciente}
         options={{
           tabBarIcon: ({ color }) => <TabBarIcon name="ios-code" color={color} />,
         }}
@@ -28,6 +34,13 @@ export default function BottomTabNavigator() {
       <BottomTab.Screen
         name="TabTwo"
         component={TabTwoNavigator}
+        options={{
+          tabBarIcon: ({ color }) => <TabBarIcon name="ios-code" color={color} />,
+        }}
+      />
+      <BottomTab.Screen
+        name="Consultas"
+        component={TabConsultasNavigator}
         options={{
           tabBarIcon: ({ color }) => <TabBarIcon name="ios-code" color={color} />,
         }}
@@ -44,15 +57,15 @@ function TabBarIcon(props: { name: React.ComponentProps<typeof Ionicons>['name']
 
 // Each tab has its own navigation stack, you can read more about this pattern here:
 // https://reactnavigation.org/docs/tab-based-navigation#a-stack-navigator-for-each-tab
-const TabOneStack = createStackNavigator<TabOneParamList>();
+const TabOneStack = createStackNavigator<AltaPacienteParamList>();
 
-function TabOneNavigator() {
+function TabAltaPaciente() {
   return (
     <TabOneStack.Navigator>
       <TabOneStack.Screen
-        name="TabOneScreen"
-        component={TabOneScreen}
-        options={{ headerTitle: 'Tab One Title' }}
+        name="AltaPacienteScreen"
+        component={AltaPacienteScreen}
+        options={{ headerTitle: 'Nuevo Paciente' }}
       />
     </TabOneStack.Navigator>
   );
@@ -69,5 +82,19 @@ function TabTwoNavigator() {
         options={{ headerTitle: 'Tab Two Title' }}
       />
     </TabTwoStack.Navigator>
+  );
+}
+
+const TabConsultasStack = createStackNavigator<TabConsultasParamList>();
+
+function TabConsultasNavigator() {
+  return (
+    <TabConsultasStack.Navigator>
+      <TabConsultasStack.Screen
+        name="TabConsultasScreen"
+        component={TabConsultasScreen}
+        options={{ headerTitle: 'Consultas' }}
+      />
+    </TabConsultasStack.Navigator>
   );
 }
