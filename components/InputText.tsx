@@ -1,15 +1,40 @@
-import * as WebBrowser from 'expo-web-browser';
-import React, {Component} from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import * as React from 'react';
+import { StyleSheet } from 'react-native';
+import {Text, View} from "./Themed";
 
-import Colors from '../constants/Colors';
-import { Text, View } from './Themed';
+interface InputProps {
+  type: string;
+  label: string;
+  value?: any;
+  disabled?: boolean;
+  placeholder?: string;
+  maxlength?: number;
+}
 
-export default class InputText extends Component {
+interface InputState {
+  value: any;
+  disabled: boolean;
+  label: string;
+  type: string;
+  placeholder: string;
+  maxlength: number;
+}
+
+export default class InputText extends React.Component<InputProps, InputState> {
   // Define props like angular class? maybe?
-  constructor(props: { disabled: boolean, type: string }) {
+  constructor(props: InputProps) {
+    const { type, label } = props;
+    let { placeholder, value, disabled, maxlength } = props;
+    // defaulting here, need to check if there is a proper way to do this
+    placeholder = placeholder ? placeholder : '';
+    disabled = !!disabled;
+    value = value ? value : null;
+    maxlength = maxlength ? maxlength : 32;
     // Always pass props
     super(props);
+    this.state = { value , disabled, label, type, placeholder, maxlength };
+
+    this.onChange = this.onChange.bind(this);
   }
 
   // React life cycle -> afterViewInit
@@ -17,80 +42,52 @@ export default class InputText extends Component {
   // React life cycle -> onDestroy
   componentWillUnmount() {  }
 
+  onChange(event: any) {
+    // Dont know what this event is
+    this.setState({ value: event.target.value , disabled: event.target.disabled })
+  }
+
   render(): React.ReactElement<any, string | React.JSXElementConstructor<any>> | string | number | {} | React.ReactNodeArray | React.ReactPortal | boolean | null | undefined {
+    //TODO: Check textinput documentation
+    // https://reactnative.dev/docs/textinput
     return (
-      <View style={styles.helpContainer}>
-        <TouchableOpacity onPress={handleHelpPress} style={styles.helpLink}>
-          <Text style={styles.helpLinkText} lightColor={Colors.light.tint}>
-          Tap here if your app doesn't automatically update after making changes
-          </Text>
-        </TouchableOpacity>
+      <View style={styles.container}>
+        <Text style={styles.label}>{ this.props.label }</Text>
+        <View style={styles.input}>
+          <input
+            hidden={ this.state.type === 'textarea'}
+            type={ this.props.type }
+            value={ this.state.value }
+            onChange={ this.onChange }
+            disabled={ this.state.disabled }
+            placeholder={ this.state.placeholder }
+            maxLength={ this.state.maxlength }
+          />
+
+          <textarea
+            hidden={ this.state.type !== 'textarea'}
+            value={ this.state.value }
+            onChange={ this.onChange }
+            disabled={ this.state.disabled }
+            placeholder={ this.state.placeholder }
+            style={{ resize: 'none' }}
+            maxLength={ this.state.maxlength }
+          />
+        </View>
       </View>
     );
   }
 
 }
 
-function handleHelpPress() {
-  WebBrowser.openBrowserAsync(
-    'https://docs.expo.io/get-started/create-a-new-app/#opening-the-app-on-your-phonetablet'
-  );
-}
-
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#fff',
+    margin: 15
   },
-  developmentModeText: {
-    marginBottom: 20,
-    fontSize: 14,
-    lineHeight: 19,
-    textAlign: 'center',
+  label: {
+    fontSize: 12
   },
-  contentContainer: {
-    paddingTop: 30,
-  },
-  welcomeContainer: {
-    alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  welcomeImage: {
-    width: 100,
-    height: 80,
-    resizeMode: 'contain',
-    marginTop: 3,
-    marginLeft: -10,
-  },
-  getStartedContainer: {
-    alignItems: 'center',
-    marginHorizontal: 50,
-  },
-  homeScreenFilename: {
-    marginVertical: 7,
-  },
-  codeHighlightText: {
-    color: 'rgba(96,100,109, 0.8)',
-  },
-  codeHighlightContainer: {
-    borderRadius: 3,
-    paddingHorizontal: 4,
-  },
-  getStartedText: {
-    fontSize: 17,
-    lineHeight: 24,
-    textAlign: 'center',
-  },
-  helpContainer: {
-    marginTop: 15,
-    marginHorizontal: 20,
-    alignItems: 'center',
-  },
-  helpLink: {
-    paddingVertical: 15,
-  },
-  helpLinkText: {
-    textAlign: 'center',
-  },
+  input: {
+    width: 150
+  }
 });
